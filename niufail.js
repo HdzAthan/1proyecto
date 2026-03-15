@@ -1,5 +1,4 @@
 console.log(`ratito (conejo)
     
-
-
-٩ʕ◕౪◕ʔو`);
+၄ စ ౪ စ ၃
+`);
