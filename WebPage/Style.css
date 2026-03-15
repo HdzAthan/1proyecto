@@ -1,0 +1,50 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  text-align: center;
+  margin: 0;
+}
+
+header {
+  background: #2c3e50;
+  color: white;
+  padding: 20px;
+}
+
+.container {
+  width: 80%;
+  margin: auto;
+  margin-top: 30px;
+}
+
+.rifa-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 10px;
+}
+
+.numero {
+  background: white;
+  border: 2px solid #333;
+  padding: 15px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.numero:hover {
+  background: #3498db;
+  color: white;
+}
+
+.vendido {
+  background: #e74c3c;
+  color: white;
+  cursor: not-allowed;
+}
+
+footer {
+  margin-top: 30px;
+  padding: 15px;
+  background: #ddd;
+}
