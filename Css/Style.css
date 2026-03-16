@@ -12,33 +12,32 @@ header {
 }
 
 .container {
-  width: 95%;
+  width: 90%;
   max-width: 1200px;
   margin: auto;
   margin-top: 30px;
 }
 
-/* GRID RESPONSIVE AUTOMÁTICA */
+/* GRID RESPONSIVE AUTOMÁTICO */
+
 .rifa-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
-  gap: 8px;
-  justify-items: center;
+  grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+  gap: 10px;
 }
 
 /* NUMEROS */
+
 .numero {
-  width: 100%;
-  max-width: 55px;
-  aspect-ratio: 1/1; /* mantiene cuadrado */
+  height: 60px;
   display: flex;
   justify-content: center;
   align-items: center;
   background: white;
   border: 2px solid #333;
-  font-weight: bold;
   cursor: pointer;
-  transition: transform 0.2s, background 0.2s, color 0.2s;
+  font-weight: bold;
+  transition: 0.2s;
   user-select: none;
 }
 
@@ -48,8 +47,9 @@ header {
 }
 
 .numero.vendido {
-  background: #e74c3c;
+  background: #ff4d4d;
   color: white;
+  transform: scale(1.15);
   cursor: not-allowed;
   transform: scale(1.1);
 }
@@ -60,25 +60,31 @@ footer {
   background: #ddd;
 }
 
-/* ===== MEDIA QUERIES ===== */
+/* ---------- MEDIA QUERIES ---------- */
 
 /* Celulares */
-@media (max-width: 480px) {
-  .rifa-grid {
-    grid-template-columns: repeat(5, 1fr);
+@media (max-width: 600px) {
+  header h1 {
+    font-size: 22px;
+  }
+
+  .numero {
+    height: 50px;
+    font-size: 14px;
   }
 }
 
 /* Tablets */
-@media (min-width: 481px) and (max-width: 900px) {
-  .rifa-grid {
-    grid-template-columns: repeat(8, 1fr);
+@media (max-width: 900px) {
+  .numero {
+    height: 55px;
   }
 }
 
 /* Pantallas grandes */
-@media (min-width: 1200px) {
-  .rifa-grid {
-    grid-template-columns: repeat(12, 1fr);
+@media (min-width: 1400px) {
+  .numero {
+    height: 70px;
+    font-size: 18px;
   }
 }
