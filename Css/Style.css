@@ -1,0 +1,84 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  text-align: center;
+  margin: 0;
+}
+
+header {
+  background: #2c3e50;
+  color: white;
+  padding: 20px;
+}
+
+.container {
+  width: 95%;
+  max-width: 1200px;
+  margin: auto;
+  margin-top: 30px;
+}
+
+/* GRID RESPONSIVE AUTOMÁTICA */
+.rifa-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
+  gap: 8px;
+  justify-items: center;
+}
+
+/* NUMEROS */
+.numero {
+  width: 100%;
+  max-width: 55px;
+  aspect-ratio: 1/1; /* mantiene cuadrado */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: white;
+  border: 2px solid #333;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s, color 0.2s;
+  user-select: none;
+}
+
+.numero:hover {
+  background: #3498db;
+  color: white;
+}
+
+.numero.vendido {
+  background: #e74c3c;
+  color: white;
+  cursor: not-allowed;
+  transform: scale(1.1);
+}
+
+footer {
+  margin-top: 30px;
+  padding: 15px;
+  background: #ddd;
+}
+
+/* ===== MEDIA QUERIES ===== */
+
+/* Celulares */
+@media (max-width: 480px) {
+  .rifa-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 900px) {
+  .rifa-grid {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
+
+/* Pantallas grandes */
+@media (min-width: 1200px) {
+  .rifa-grid {
+    grid-template-columns: repeat(12, 1fr);
+  }
+}
