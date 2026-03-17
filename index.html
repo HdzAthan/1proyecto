@@ -8,13 +8,23 @@
 
   <body>
     <header>
-      <h1>🎟️ Rifa Kenzo & Roy</h1>
-      <p>Compra tu número y participa para ganar un premio</p>
+
+      <h1>💥 Me Rifan 💥</h1>
+      <p>
+        Un portal web en el que podras participar por innumerables premios,
+        animate a competir con los demas concursantes!!
+      </p>
+
+      <div class="header-top">
+        <input type="button" value="JUGAR" class="btn-jugar" />
+          <label for="codigo">Ingresar código</label>
+          <input type="text" id="codigo" placeholder="Ej: 1234" />
+      </div>
+
     </header>
 
     <div class="container">
       <h2>Números disponibles</h2>
-
       <div class="rifa-grid" id="rifaGrid"></div>
     </div>
 
@@ -23,6 +33,96 @@
       <p>Contacto: WhatsApp +57 300 391 1810</p>
     </footer>
 
+    <!-- ===== MODAL FORMULARIO ===== -->
+    <div class="modal" id="modalForm">
+      <div class="modal-content">
+        <span class="close-btn" id="closeModal">&times;</span>
+        <h2>Compra tus Tickets</h2>
+
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" placeholder="Tu nombre" />
+
+        <label for="apellido">Apellido</label>
+        <input type="text" id="apellido" placeholder="Tu apellido" />
+
+        <label for="cedula">Cédula</label>
+        <input type="text" id="cedula" placeholder="Tu cédula" />
+
+        <label for="telefono">Teléfono</label>
+        <input type="tel" id="telefono" placeholder="Tu teléfono" />
+
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Tu email" />
+
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="numeros" value="5">5</label>
+          <label><input type="checkbox" name="numeros" value="10">10</label>
+          <label><input type="checkbox" name="numeros" value="15">15</label>
+          <label><input type="checkbox" name="numeros" value="20">20</label>
+        </div>
+
+        <button class="btn-comprar" id="comprarBtn">Comprar</button>
+      </div>
+    </div>
+
     <script src="Scripts/Script.js"></script>
+    <script>
+      const btnJugar = document.querySelector('.btn-jugar');
+      const modal = document.getElementById('modalForm');
+      const closeBtn = document.getElementById('closeModal');
+      const comprarBtn = document.getElementById('comprarBtn');
+      const checkboxes = document.querySelectorAll('.checkbox-group input[type="checkbox"]');
+
+      // Abrir modal
+      btnJugar.addEventListener('click', () => {
+        modal.style.display = 'flex';
+      });
+
+      // Cerrar modal
+      closeBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+      });
+
+      window.addEventListener('click', (e) => {
+        if(e.target === modal) {
+          modal.style.display = 'none';
+        }
+      });
+
+      // Permitir solo un checkbox seleccionado
+      checkboxes.forEach(cb => {
+        cb.addEventListener('change', () => {
+          if(cb.checked){
+            checkboxes.forEach(other => {
+              if(other !== cb) other.checked = false;
+            });
+          }
+        });
+      });
+
+      // Validación simple antes de "comprar"
+      comprarBtn.addEventListener('click', () => {
+        const nombre = document.getElementById('nombre').value.trim();
+        const apellido = document.getElementById('apellido').value.trim();
+        const cedula = document.getElementById('cedula').value.trim();
+        const telefono = document.getElementById('telefono').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const seleccionado = Array.from(checkboxes).some(cb => cb.checked);
+
+        if(!nombre || !apellido || !cedula || !telefono || !email) {
+          alert("Por favor completa todos los campos.");
+          return;
+        }
+
+        if(!seleccionado){
+          alert("Por favor selecciona un paquete de números.");
+          return;
+        }
+
+        alert("Formulario enviado correctamente!");
+        modal.style.display = 'none';
+        // Aquí podrías agregar lógica de envío real
+      });
+    </script>
   </body>
 </html>
