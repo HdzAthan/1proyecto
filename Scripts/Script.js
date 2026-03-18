@@ -1,3 +1,4 @@
+// ===== GENERAR GRILLA DE NÚMEROS DE RIFA =====
 const grid = document.getElementById("rifaGrid");
 
 for (let i = 1; i <= 100; i++) {

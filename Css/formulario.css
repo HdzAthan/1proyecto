@@ -1,0 +1,212 @@
+/* ===== ESTILOS DEL FORMULARIO ===== */
+
+.container-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 200px);
+  padding: 20px;
+}
+
+.form-card {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  width: 100%;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-card h2 {
+  color: #2c3e50;
+  margin-top: 0;
+  margin-bottom: 30px;
+  text-align: center;
+  font-size: 28px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  color: #2c3e50;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="tel"],
+.form-group input[type="email"] {
+  padding: 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: 0.3s;
+  font-family: inherit;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="tel"]:focus,
+.form-group input[type="email"]:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 8px rgba(52, 152, 219, 0.2);
+  background: #f8fbff;
+}
+
+.checkbox-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+  background: white;
+}
+
+.checkbox-label input[type="checkbox"] {
+  margin-right: 10px;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+.checkbox-label:hover {
+  border-color: #3498db;
+  background: #f0f7ff;
+}
+
+.checkbox-label input[type="checkbox"]:checked + span {
+  color: #3498db;
+  font-weight: 600;
+}
+
+.checkbox-label input[type="checkbox"]:checked {
+  accent-color: #3498db;
+}
+
+.checkbox-label span {
+  font-size: 14px;
+  color: #333;
+  transition: 0.2s;
+}
+
+.btn-comprar {
+  width: 100%;
+  padding: 14px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-comprar:hover {
+  background: #2980b9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.btn-comprar:active {
+  transform: translateY(0);
+}
+
+/* ===== ENCABEZADO MODIFICADO ===== */
+
+.header-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.header-nav h1 {
+  margin: 0;
+  flex: 1;
+}
+
+.btn-volver {
+  background: #ff9800;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: 0.3s;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.btn-volver:hover {
+  background: #f57c00;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 600px) {
+  .form-card {
+    padding: 25px;
+  }
+
+  .form-card h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  .checkbox-group {
+    grid-template-columns: 1fr;
+  }
+
+  .header-nav {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  header h1 {
+    font-size: 20px;
+  }
+
+  .btn-volver {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 900px) {
+  .form-card {
+    padding: 30px;
+  }
+}

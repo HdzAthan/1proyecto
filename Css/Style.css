@@ -9,6 +9,30 @@ header {
   background: #2c3e50;
   color: white;
   padding: 20px;
+  position: relative;
+}
+
+.header-top-buttons {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.btn-registro {
+  background: #ff9800;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: 0.3s;
+  display: inline-block;
+}
+
+.btn-registro:hover {
+  background: #f57c00;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
 }
 
 .container {
@@ -54,6 +78,37 @@ header {
   transform: scale(1.1);
 }
 
+/* BOTÓN JUGAR */
+
+.header-top {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.btn-jugar {
+  background: #e74c3c;
+  color: white;
+  padding: 12px 30px;
+  text-decoration: none;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+  display: inline-block;
+}
+
+.btn-jugar:hover {
+  background: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
 footer {
   margin-top: 30px;
   padding: 15px;
@@ -66,11 +121,36 @@ footer {
 @media (max-width: 600px) {
   header h1 {
     font-size: 22px;
+    margin: 0 0 10px 0;
+  }
+
+  .header-top-buttons {
+    position: static;
+    margin-bottom: 15px;
+  }
+
+  .btn-registro {
+    width: 100%;
+    text-align: center;
   }
 
   .numero {
     height: 50px;
     font-size: 14px;
+  }
+
+  .header-top {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn-jugar {
+    width: 100%;
+  }
+
+  #codigo {
+    width: 100%;
+    max-width: 200px;
   }
 }
 
@@ -78,6 +158,14 @@ footer {
 @media (max-width: 900px) {
   .numero {
     height: 55px;
+  }
+
+  .header-top {
+    flex-direction: column;
+  }
+
+  .btn-jugar {
+    width: 100%;
   }
 }
 
