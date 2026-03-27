@@ -1,7 +1,65 @@
-// ===== MANEJADOR DE FORMULARIO DE REGISTRO =====
+const STORAGE_KEY = "rifaUsuarios";
+const ENCRYPTION_KEY = "RifaLocalKey2026";
 
 const formulario = document.getElementById("formularioRegistro");
 const checkboxes = document.querySelectorAll('.checkbox-group input[type="checkbox"]');
+
+function base64Encode(value) {
+  return btoa(String.fromCharCode(...new TextEncoder().encode(value)));
+}
+
+function base64Decode(value) {
+  return new TextDecoder().decode(Uint8Array.from(atob(value), (c) => c.charCodeAt(0)));
+}
+
+function xorCipher(text) {
+  return [...text]
+    .map((character, index) =>
+      String.fromCharCode(
+        character.charCodeAt(0) ^ ENCRYPTION_KEY.charCodeAt(index % ENCRYPTION_KEY.length)
+      )
+    )
+    .join("");
+}
+
+function encrypt(value) {
+  return base64Encode(xorCipher(value));
+}
+
+function getStoredUsers() {
+  return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+}
+
+function getTotalAllocatedTickets() {
+  return getStoredUsers().reduce((total, usuario) => {
+    const paquete = Number(decrypt(usuario.paquete) || 0);
+    return total + (Number.isNaN(paquete) ? 0 : paquete);
+  }, 0);
+}
+
+function getAvailableTickets() {
+  return Math.max(0, 100 - getTotalAllocatedTickets());
+}
+
+function saveUser(user) {
+  const usuarios = getStoredUsers();
+  usuarios.push({
+    nombre: encrypt(user.nombre),
+    apellido: encrypt(user.apellido),
+    cedula: encrypt(user.cedula),
+    telefono: encrypt(user.telefono),
+    email: encrypt(user.email),
+    paquete: encrypt(user.paquete),
+    codigo: encrypt(user.codigo),
+    registrado: user.registrado,
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(usuarios));
+}
+
+function generateCode(length = 6) {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+}
 
 // Permitir solo un checkbox seleccionado
 checkboxes.forEach((cb) => {
@@ -24,6 +82,7 @@ formulario.addEventListener("submit", (e) => {
   const telefono = document.getElementById("telefono").value.trim();
   const email = document.getElementById("email").value.trim();
   const seleccionado = Array.from(checkboxes).some((cb) => cb.checked);
+  const paquete = Array.from(checkboxes).find((cb) => cb.checked)?.value || "";
 
   if (!nombre || !apellido || !cedula || !telefono || !email) {
     alert("Por favor completa todos los campos.");
@@ -35,7 +94,32 @@ formulario.addEventListener("submit", (e) => {
     return;
   }
 
-  alert("¡Formulario enviado correctamente!");
+  const disponible = getAvailableTickets();
+  const paqueteNumero = Number(paquete);
+
+  if (disponible <= 0) {
+    alert("Lo siento, ya no quedan tickets disponibles. No se permiten nuevos registros.");
+    return;
+  }
+
+  if (paqueteNumero > disponible) {
+    alert(`Solo quedan ${disponible} ticket(s) disponibles. Selecciona un paquete menor o espera a que haya disponibilidad.`);
+    return;
+  }
+
+  const codigo = generateCode(6);
+  const nuevoUsuario = {
+    nombre,
+    apellido,
+    cedula,
+    telefono,
+    email,
+    paquete,
+    codigo,
+    registrado: new Date().toLocaleString(),
+  };
+
+  saveUser(nuevoUsuario);
+  alert(`¡Formulario enviado correctamente! Tu código para desbloquear los números es: ${codigo}`);
   formulario.reset();
-  // Aquí podrías agregar lógica de envío real
 });

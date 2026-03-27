@@ -3,8 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rifa Kenzo & Roy</title>
-
+    <title>🍀Me Rifan🍀</title>
     <link rel="stylesheet" href="Css/Style.css" />
   </head>
 
@@ -13,25 +12,43 @@
       <div class="header-top-buttons">
         <a href="formulario.html" class="btn-registro">Registrarse →</a>
       </div>
-      <h1>💥 Me Rifan 💥</h1>
-      <p>Un portal web en el que podras participar por innumerables premios, animate a competir con los demas concursantes!!</p>
+      <h1>🫰💰🍀 Me Rifan 🍀💰🫰</h1>
+      <p>Portal web en el que podras participar por innumerables premios, animate a competir con los demas concursantes!!</p>
 
       <div class="header-top">
         <a href="formulario.html" class="btn-jugar">JUGAR</a>
+        <button id="btnRuleta" class="btn-ruleta" type="button" disabled>GIRAR RUEDA</button>
         <label for="codigo">Ingresar código</label>
         <input type="text" id="codigo" placeholder="Ej: 1234" />
+        <button id="btnValidar" class="btn-validar" type="button">Validar</button>
       </div>
+      <p id="codigoStatus" class="codigo-status"></p>
+      <p id="maxSelectionInfo" class="codigo-status"></p>
+      <p id="ruletaResultado" class="resultado-ruleta"></p>
+      <p>El sorteo dara inicio automaticamente una vez sean seleccionados todos los numeros propuestos.</p>
     </header>
 
     <div class="container">
       <h2>Números disponibles</h2>
       <div class="rifa-grid" id="rifaGrid"></div>
+
+      <div class="user-list-section">
+        <h2>Usuarios registrados</h2>
+        <div id="usuariosRegistrados" class="usuarios-registrados"></div>
+      </div>
     </div>
 
-    <footer>
-      <p>Valor por número: $2.000</p>
-      <p>Contacto: WhatsApp +57 300 391 1810</p>
     </footer>
+
+    <div id="winnerModal" class="modal hidden">
+      <div class="modal-content">
+        <button id="closeModal" class="modal-close">×</button>
+        <h2>Número ganador</h2>
+        <p id="modalNumero" class="modal-number"></p>
+        <div id="modalUsuario" class="modal-user"></div>
+        <button id="modalAceptar" class="btn-validar" type="button">Aceptar</button>
+      </div>
+    </div>
 
     <script src="Scripts/Script.js"></script>
   </body>
