@@ -22,6 +22,8 @@ const btnNextPage = document.getElementById("btnNextPage");
 const pageStatus = document.getElementById("pageStatus");
 const paginationControls = document.getElementById("paginationControls");
 const PAGE_SIZE = 100;
+const WINNER_NUMBER_KEY = "rifaWinnerNumber";
+const WINNER_CODE_KEY = "rifaWinnerCode";
 let rouletteInterval = null;
 let currentUser = null;
 let currentCode = "";
@@ -32,6 +34,7 @@ let totalPages = 1;
 let winnerNumber = null;
 let winnerCode = "";
 const selectedNumbers = loadSelectedNumbers();
+loadWinnerState();
 
 function getTotalNumbers() {
   const storedValue = Number(localStorage.getItem(TOTAL_NUMBERS_KEY));
@@ -122,6 +125,29 @@ function saveSelectedNumbers() {
   localStorage.setItem(SELECTED_NUMBERS_KEY, JSON.stringify(objectToSave));
 }
 
+function loadWinnerState() {
+  const storedValue = Number(localStorage.getItem(WINNER_NUMBER_KEY));
+  const storedCode = String(localStorage.getItem(WINNER_CODE_KEY) || "");
+  if (Number.isInteger(storedValue) && storedValue > 0) {
+    winnerNumber = storedValue;
+  }
+  winnerCode = storedCode;
+}
+
+function saveWinnerState(number, code) {
+  winnerNumber = number;
+  winnerCode = String(code || "");
+  localStorage.setItem(WINNER_NUMBER_KEY, String(number));
+  localStorage.setItem(WINNER_CODE_KEY, winnerCode);
+}
+
+function clearWinnerState() {
+  winnerNumber = null;
+  winnerCode = "";
+  localStorage.removeItem(WINNER_NUMBER_KEY);
+  localStorage.removeItem(WINNER_CODE_KEY);
+}
+
 function getTotalAllocatedTickets() {
   return getStoredUsers().reduce((total, usuario) => {
     const paquete = Number(decrypt(usuario.paquete) || 0);
@@ -156,7 +182,11 @@ function generateCode(length = 6) {
 function createNumberGrid() {
   const totalNumbers = getTotalNumbers();
   totalPages = Math.max(1, Math.ceil(totalNumbers / PAGE_SIZE));
-  currentPage = Math.min(currentPage, totalPages);
+  if (winnerNumber !== null) {
+    currentPage = Math.min(Math.max(1, Math.ceil(winnerNumber / PAGE_SIZE)), totalPages);
+  } else {
+    currentPage = Math.min(currentPage, totalPages);
+  }
   renderPage(currentPage);
 }
 
@@ -225,12 +255,19 @@ function renderPage(page) {
       codigoStatus.classList.add("exito");
       setSelectionInfo();
 
-      if (isSelectionComplete()) {
+      const totalVendidos = selectedNumbers.size;
+      const selectionCompletedNow = isSelectionComplete();
+
+      if (selectionCompletedNow) {
         codigoStatus.textContent = `Has completado tu selección de ${selectionLimit} números.`;
         lockNumbers();
+        if (totalVendidos !== totalNumbers) {
+          setTimeout(() => {
+            location.reload();
+          }, 800);
+        }
       }
 
-      const totalVendidos = selectedNumbers.size;
       if (totalVendidos === totalNumbers) {
         codigoStatus.textContent = "Todos los números fueron elegidos. Iniciando la ruleta automáticamente...";
         codigoStatus.classList.remove("error");
@@ -427,6 +464,9 @@ function showWinnerModal(winnerNumber, user) {
   }
 
   winnerModal.classList.remove("hidden");
+  setTimeout(() => {
+    location.reload();
+  }, 5000);
 }
 
 function hideWinnerModal() {
@@ -472,7 +512,7 @@ function startRoulette() {
     }
 
     const winnerCodeFromNumber = winner?.dataset.codigo || "";
-    winnerCode = winnerCodeFromNumber;
+    saveWinnerState(winnerIndex, winnerCodeFromNumber);
     const winnerUser = winnerCodeFromNumber ? getValidUserByCode(winnerCodeFromNumber) : null;
     showWinnerModal(winnerNumberString, winnerUser);
     renderRegisteredUsers();
