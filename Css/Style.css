@@ -390,16 +390,24 @@ header {
   margin-top: 6px;
   font-size: 13px;
   color: #666;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.usuario-meta span {
+  display: inline-flex;
+  align-items: center;
 }
 
 .user-status {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 18px;
-  height: 18px;
+  min-width: 20px;
+  height: 20px;
   padding: 0 6px;
-  margin-left: 6px;
   font-size: 12px;
   color: #27ae60;
   background: rgba(39, 174, 96, 0.12);
@@ -408,7 +416,6 @@ header {
 }
 
 .user-winner {
-  margin-left: 6px;
   color: #27ae60;
   font-size: 12px;
   font-weight: 700;
