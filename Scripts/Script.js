@@ -2,6 +2,7 @@
 const STORAGE_KEY = "rifaUsuarios";
 const ENCRYPTION_KEY = "RifaLocalKey2026";
 const TOTAL_NUMBERS_KEY = "rifaTotalNumbers";
+const SELECTED_NUMBERS_KEY = "rifaSelectedNumbers";
 
 const grid = document.getElementById("rifaGrid");
 const btnRuleta = document.getElementById("btnRuleta");
@@ -28,7 +29,7 @@ let selectionLimit = 0;
 let selectedCount = 0;
 let currentPage = 1;
 let totalPages = 1;
-const selectedNumbers = new Map();
+const selectedNumbers = loadSelectedNumbers();
 
 function getTotalNumbers() {
   const storedValue = Number(localStorage.getItem(TOTAL_NUMBERS_KEY));
@@ -100,6 +101,23 @@ function getStoredUsers() {
     localStorage.removeItem(STORAGE_KEY);
     return [];
   }
+}
+
+function loadSelectedNumbers() {
+  try {
+    const stored = localStorage.getItem(SELECTED_NUMBERS_KEY);
+    if (!stored) return new Map();
+    const parsed = JSON.parse(stored);
+    return new Map(Object.entries(parsed).map(([key, value]) => [Number(key), String(value)]));
+  } catch {
+    localStorage.removeItem(SELECTED_NUMBERS_KEY);
+    return new Map();
+  }
+}
+
+function saveSelectedNumbers() {
+  const objectToSave = Object.fromEntries(Array.from(selectedNumbers.entries()));
+  localStorage.setItem(SELECTED_NUMBERS_KEY, JSON.stringify(objectToSave));
 }
 
 function getTotalAllocatedTickets() {
@@ -191,6 +209,7 @@ function renderPage(page) {
       }
 
       selectedNumbers.set(i, currentCode);
+      saveSelectedNumbers();
       numero.classList.add("vendido", "selected-by-user");
       numero.dataset.codigo = currentCode;
       numero.classList.remove("unlocked");

@@ -1,3 +1,7 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 body {
   font-family: Arial, sans-serif;
   background: #f4f4f4;
@@ -74,7 +78,7 @@ header {
 .admin-settings label {
   display: block;
   margin-bottom: 10px;
-  color: #ecf0f1;
+  color: #2c3e50;
 }
 
 .admin-settings select {
@@ -93,6 +97,13 @@ header {
   max-width: 1200px;
   margin: auto;
   margin-top: 30px;
+}
+
+@media (max-width: 900px) {
+  .container {
+    width: 95%;
+    margin-top: 20px;
+  }
 }
 
 /* GRID RESPONSIVE AUTOMÁTICO */
@@ -402,14 +413,18 @@ header {
 
 /* Celulares */
 @media (max-width: 600px) {
+  header {
+    padding: 16px;
+  }
+
   header h1 {
-    font-size: 22px;
+    font-size: 20px;
     margin: 0 0 10px 0;
   }
 
-  .numero {
-    height: 50px;
-    font-size: 14px;
+  .header-top-left {
+    position: static;
+    margin-bottom: 15px;
   }
 
   .header-top {
@@ -417,28 +432,107 @@ header {
     gap: 10px;
   }
 
-  .btn-jugar {
+  .btn-admin,
+  .btn-jugar,
+  .btn-ruleta,
+  .btn-validar {
     width: 100%;
+    max-width: 100%;
   }
 
   #codigo {
     width: 100%;
-    max-width: 200px;
+    max-width: 100%;
+  }
+
+  .rifa-grid {
+    grid-template-columns: repeat(auto-fit, minmax(42px, 1fr));
+    gap: 6px;
+  }
+
+  .numero {
+    height: 48px;
+    font-size: 13px;
+  }
+
+  .numbers-wrapper {
+    max-height: 360px;
+  }
+
+  .pagination-controls {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .pagination-controls button {
+    min-width: 80px;
+  }
+
+  .admin-panel,
+  .admin-card {
+    padding: 16px;
+  }
+
+  .admin-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-settings select {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 12px;
+  }
+
+  .usuario-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .user-list-section h2 {
+    font-size: 20px;
   }
 }
 
 /* Tablets */
 @media (max-width: 900px) {
-  .numero {
-    height: 55px;
+  .header-top-left {
+    position: static;
+    margin-bottom: 15px;
   }
 
   .header-top {
     flex-direction: column;
+    gap: 12px;
   }
 
-  .btn-jugar {
+  .btn-admin,
+  .btn-jugar,
+  .btn-ruleta,
+  .btn-validar {
     width: 100%;
+    max-width: 100%;
+  }
+
+  .rifa-grid {
+    grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
+  }
+
+  .numero {
+    height: 52px;
+    font-size: 13px;
+  }
+
+  .numbers-wrapper {
+    max-height: 420px;
+  }
+
+  .admin-settings select {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .admin-cards {
+    grid-template-columns: 1fr;
   }
 }
 
