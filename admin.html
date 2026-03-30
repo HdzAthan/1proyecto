@@ -32,6 +32,21 @@
           </div>
         </div>
 
+        <div class="admin-settings">
+          <h3>Ajustar cantidad de números en juego</h3>
+          <p>Selecciona cuántos números tendrá la rifa en la próxima carga de la página principal.</p>
+          <label for="totalNumbersSelect">Total de números:</label>
+          <select id="totalNumbersSelect" class="btn-admin">
+            <option value="100">100</option>
+            <option value="200">200</option>
+            <option value="500">500</option>
+            <option value="1000">1000</option>
+            <option value="5000">5000</option>
+          </select>
+          <button id="btnSaveTotalNumbers" class="btn-admin" type="button">Guardar total de números</button>
+          <p id="adminSettingsMessage" class="codigo-status"></p>
+        </div>
+
         <button id="btnClearUsers" class="btn-admin admin-clear-btn" type="button">Limpiar usuarios registrados</button>
         <p id="adminMessage" class="codigo-status"></p>
       </section>
@@ -39,8 +54,12 @@
 
     <script>
       const STORAGE_KEY = "rifaUsuarios";
+      const TOTAL_NUMBERS_KEY = "rifaTotalNumbers";
       const btnClearUsers = document.getElementById("btnClearUsers");
       const adminMessage = document.getElementById("adminMessage");
+      const btnSaveTotalNumbers = document.getElementById("btnSaveTotalNumbers");
+      const totalNumbersSelect = document.getElementById("totalNumbersSelect");
+      const adminSettingsMessage = document.getElementById("adminSettingsMessage");
 
       function getUserCount() {
         try {
@@ -51,6 +70,11 @@
         }
       }
 
+      function getSavedTotalNumbers() {
+        const value = Number(localStorage.getItem(TOTAL_NUMBERS_KEY));
+        return Number.isInteger(value) && value > 0 ? value : 100;
+      }
+
       function updateAdminMessage() {
         const count = getUserCount();
         if (count === 0) {
@@ -59,9 +83,12 @@
           adminMessage.classList.add("exito");
         } else {
           adminMessage.textContent = `Usuarios registrados: ${count}. Presiona el botón para eliminarlos.`;
-          adminMessage.classList.remove("exito");
-          adminMessage.classList.remove("error");
+          adminMessage.classList.remove("exito", "error");
         }
+      }
+
+      function updateTotalNumbersSelect() {
+        totalNumbersSelect.value = String(getSavedTotalNumbers());
       }
 
       btnClearUsers.addEventListener("click", () => {
@@ -83,7 +110,23 @@
         adminMessage.classList.add("exito");
       });
 
+      btnSaveTotalNumbers.addEventListener("click", () => {
+        const total = Number(totalNumbersSelect.value);
+        if (!Number.isInteger(total) || total <= 0) {
+          adminSettingsMessage.textContent = "Selecciona un valor válido.";
+          adminSettingsMessage.classList.remove("exito");
+          adminSettingsMessage.classList.add("error");
+          return;
+        }
+
+        localStorage.setItem(TOTAL_NUMBERS_KEY, String(total));
+        adminSettingsMessage.textContent = `Total de números configurado a ${total}. Recarga la página principal para ver el cambio.`;
+        adminSettingsMessage.classList.remove("error");
+        adminSettingsMessage.classList.add("exito");
+      });
+
       updateAdminMessage();
+      updateTotalNumbersSelect();
     </script>
   </body>
 </html>

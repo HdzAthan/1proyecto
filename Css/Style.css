@@ -38,6 +38,55 @@ header {
   box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
 }
 
+.admin-panel {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+}
+
+.admin-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  margin: 24px 0;
+}
+
+.admin-card {
+  background: #fff;
+  border: 1px solid rgba(44, 62, 80, 0.08);
+  border-radius: 14px;
+  padding: 18px;
+  text-align: left;
+}
+
+.admin-card h3 {
+  margin-top: 0;
+  color: #2c3e50;
+}
+
+.admin-settings {
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.admin-settings label {
+  display: block;
+  margin-bottom: 10px;
+  color: #ecf0f1;
+}
+
+.admin-settings select {
+  width: auto;
+  min-width: 140px;
+  margin-right: 12px;
+}
+
+.admin-clear-btn {
+  margin-top: 10px;
+}
+
 
 .container {
   width: 90%;
@@ -50,15 +99,38 @@ header {
 
 .rifa-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  gap: 8px;
+}
+
+.numbers-wrapper {
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 8px;
+  margin-bottom: 12px;
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.pagination-controls button {
+  min-width: 100px;
+}
+
+.hidden-page {
+  display: none !important;
 }
 
 /* NUMEROS */
 
 .numero {
   position: relative;
-  height: 60px;
+  height: 52px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -66,8 +138,7 @@ header {
   border: 2px solid #333;
   cursor: not-allowed;
   font-weight: bold;
-  transition: 0.2s;
-  user-select: none;
+  font-size: 14px;
 }
 
 .numero.locked:hover {

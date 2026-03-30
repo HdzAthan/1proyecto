@@ -1,7 +1,8 @@
+// ===== CONSTANTES =====
 const STORAGE_KEY = "rifaUsuarios";
 const ENCRYPTION_KEY = "RifaLocalKey2026";
+const TOTAL_NUMBERS_KEY = "rifaTotalNumbers";
 
-// ===== GENERAR GRILLA DE NÚMEROS DE RIFA =====
 const grid = document.getElementById("rifaGrid");
 const btnRuleta = document.getElementById("btnRuleta");
 const btnValidar = document.getElementById("btnValidar");
@@ -15,64 +16,58 @@ const modalNumero = document.getElementById("modalNumero");
 const modalUsuario = document.getElementById("modalUsuario");
 const closeModal = document.getElementById("closeModal");
 const modalAceptar = document.getElementById("modalAceptar");
+const btnPrevPage = document.getElementById("btnPrevPage");
+const btnNextPage = document.getElementById("btnNextPage");
+const pageStatus = document.getElementById("pageStatus");
+const paginationControls = document.getElementById("paginationControls");
+const PAGE_SIZE = 100;
 let rouletteInterval = null;
-btnRuleta.disabled = true;
 let currentUser = null;
 let currentCode = "";
 let selectionLimit = 0;
 let selectedCount = 0;
+let currentPage = 1;
+let totalPages = 1;
+const selectedNumbers = new Map();
 
-for (let i = 1; i <= 100; i++) {
-  const numero = document.createElement("div");
-  numero.classList.add("numero", "locked");
-  numero.textContent = i;
+function getTotalNumbers() {
+  const storedValue = Number(localStorage.getItem(TOTAL_NUMBERS_KEY));
+  return Number.isInteger(storedValue) && storedValue > 0 ? storedValue : 100;
+}
 
-  numero.addEventListener("click", function () {
-    if (numero.classList.contains("locked") || numero.classList.contains("vendido")) {
-      return;
-    }
+function isSelectionComplete() {
+  return currentUser && selectionLimit > 0 && getSelectedCountForCurrentCode() >= selectionLimit;
+}
 
-    if (!currentUser) {
-      codigoStatus.textContent = "Ingresa un código válido antes de seleccionar números.";
-      codigoStatus.classList.remove("exito");
-      codigoStatus.classList.add("error");
-      return;
-    }
-
-    selectedCount = getSelectedCountForCurrentCode();
-    if (selectedCount >= selectionLimit) {
-      codigoStatus.textContent = `Ya alcanzaste el límite de ${selectionLimit} número(s).`;
-      codigoStatus.classList.remove("exito");
-      codigoStatus.classList.add("error");
-      return;
-    }
-
-    numero.classList.add("vendido", "selected-by-user");
-    numero.dataset.codigo = currentCode;
-    selectedCount += 1;
-    codigoStatus.textContent = "Número seleccionado correctamente.";
-    codigoStatus.classList.remove("error");
-    codigoStatus.classList.add("exito");
-    setSelectionInfo();
-
-    const totalVendidos = document.querySelectorAll(".numero.vendido").length;
-    if (totalVendidos === 100) {
-      codigoStatus.textContent = "Todos los números fueron elegidos. Iniciando la ruleta automáticamente...";
-      codigoStatus.classList.remove("error");
-      codigoStatus.classList.add("exito");
-      startRoulette();
+function lockNumbers() {
+  document.querySelectorAll(".numero").forEach((numero) => {
+    if (!numero.classList.contains("vendido")) {
+      numero.classList.remove("unlocked");
+      numero.classList.add("locked");
     }
   });
-
-  grid.appendChild(numero);
 }
 
 function base64Encode(value) {
-  return btoa(String.fromCharCode(...new TextEncoder().encode(value)));
+  try {
+    if (typeof TextEncoder !== "undefined") {
+      return btoa(String.fromCharCode(...new TextEncoder().encode(value)));
+    }
+  } catch (error) {
+    // Fallback for older browsers
+  }
+  return btoa(unescape(encodeURIComponent(value)));
 }
 
 function base64Decode(value) {
-  return new TextDecoder().decode(Uint8Array.from(atob(value), (c) => c.charCodeAt(0)));
+  try {
+    if (typeof TextDecoder !== "undefined") {
+      return new TextDecoder().decode(Uint8Array.from(atob(value), (c) => c.charCodeAt(0)));
+    }
+  } catch (error) {
+    // Fallback for older browsers
+  }
+  return decodeURIComponent(escape(atob(value)));
 }
 
 function xorCipher(text) {
@@ -85,25 +80,169 @@ function xorCipher(text) {
     .join("");
 }
 
+function encrypt(value) {
+  return base64Encode(xorCipher(value));
+}
+
 function decrypt(value) {
   try {
     return xorCipher(base64Decode(value));
   } catch (error) {
-    return value;
+    return String(value || "");
   }
 }
 
 function getStoredUsers() {
-  const usuarios = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-  const limpiados = usuarios.filter((usuario) => {
-    return usuario && usuario.codigo != null && String(usuario.codigo).trim() !== "";
-  });
+  try {
+    const usuarios = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    return Array.isArray(usuarios) ? usuarios.filter((usuario) => usuario && usuario.codigo != null) : [];
+  } catch (error) {
+    localStorage.removeItem(STORAGE_KEY);
+    return [];
+  }
+}
 
-  if (limpiados.length !== usuarios.length) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(limpiados));
+function getTotalAllocatedTickets() {
+  return getStoredUsers().reduce((total, usuario) => {
+    const paquete = Number(decrypt(usuario.paquete) || 0);
+    return total + (Number.isNaN(paquete) ? 0 : paquete);
+  }, 0);
+}
+
+function getAvailableTickets() {
+  return Math.max(0, getTotalNumbers() - getTotalAllocatedTickets());
+}
+
+function saveUser(user) {
+  const usuarios = getStoredUsers();
+  usuarios.push({
+    nombre: encrypt(user.nombre),
+    apellido: encrypt(user.apellido),
+    cedula: encrypt(user.cedula),
+    telefono: encrypt(user.telefono),
+    email: encrypt(user.email),
+    paquete: encrypt(user.paquete),
+    codigo: encrypt(user.codigo),
+    registrado: user.registrado,
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(usuarios));
+}
+
+function generateCode(length = 6) {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+}
+
+function createNumberGrid() {
+  const totalNumbers = getTotalNumbers();
+  totalPages = Math.max(1, Math.ceil(totalNumbers / PAGE_SIZE));
+  currentPage = Math.min(currentPage, totalPages);
+  renderPage(currentPage);
+}
+
+function renderPage(page) {
+  const totalNumbers = getTotalNumbers();
+  totalPages = Math.max(1, Math.ceil(totalNumbers / PAGE_SIZE));
+  currentPage = Math.min(Math.max(1, page), totalPages);
+  const start = (currentPage - 1) * PAGE_SIZE + 1;
+  const end = Math.min(totalNumbers, currentPage * PAGE_SIZE);
+
+  grid.innerHTML = "";
+
+  for (let i = start; i <= end; i++) {
+    const numero = document.createElement("div");
+    numero.classList.add("numero");
+    numero.dataset.number = i;
+    numero.textContent = i;
+
+    const selectedCode = selectedNumbers.get(i);
+    const selectionComplete = isSelectionComplete();
+
+    if (selectedCode) {
+      numero.classList.add("vendido", "selected-by-user");
+      numero.dataset.codigo = selectedCode;
+      numero.classList.remove("locked", "unlocked");
+    } else if (currentUser && !selectionComplete) {
+      numero.classList.add("unlocked");
+      numero.classList.remove("locked");
+    } else {
+      numero.classList.add("locked");
+      numero.classList.remove("unlocked");
+    }
+
+    numero.addEventListener("click", function () {
+      if (numero.classList.contains("locked") || numero.classList.contains("vendido")) {
+        return;
+      }
+
+      if (!currentUser) {
+        codigoStatus.textContent = "Ingresa un código válido antes de seleccionar números.";
+        codigoStatus.classList.remove("exito");
+        codigoStatus.classList.add("error");
+        return;
+      }
+
+      selectedCount = getSelectedCountForCurrentCode();
+      if (selectedCount >= selectionLimit) {
+        codigoStatus.textContent = `Ya alcanzaste el límite de ${selectionLimit} número(s).`;
+        codigoStatus.classList.remove("exito");
+        codigoStatus.classList.add("error");
+        return;
+      }
+
+      selectedNumbers.set(i, currentCode);
+      numero.classList.add("vendido", "selected-by-user");
+      numero.dataset.codigo = currentCode;
+      numero.classList.remove("unlocked");
+      selectedCount += 1;
+      codigoStatus.textContent = "Número seleccionado correctamente.";
+      codigoStatus.classList.remove("error");
+      codigoStatus.classList.add("exito");
+      setSelectionInfo();
+
+      if (isSelectionComplete()) {
+        codigoStatus.textContent = `Has completado tu selección de ${selectionLimit} números.`;
+        lockNumbers();
+      }
+
+      const totalVendidos = selectedNumbers.size;
+      if (totalVendidos === totalNumbers) {
+        codigoStatus.textContent = "Todos los números fueron elegidos. Iniciando la ruleta automáticamente...";
+        codigoStatus.classList.remove("error");
+        codigoStatus.classList.add("exito");
+        startRoulette();
+      }
+    });
+
+    grid.appendChild(numero);
   }
 
-  return limpiados;
+  updatePaginationControls();
+}
+
+function showPage(page) {
+  renderPage(page);
+}
+
+function updatePaginationControls() {
+  const totalNumbers = getTotalNumbers();
+  totalPages = Math.max(1, Math.ceil(totalNumbers / PAGE_SIZE));
+  pageStatus.textContent = `Página ${currentPage} de ${totalPages}`;
+  btnPrevPage.disabled = currentPage === 1;
+  btnNextPage.disabled = currentPage === totalPages;
+  paginationControls.style.display = totalPages > 1 ? "flex" : "none";
+}
+
+if (btnPrevPage) {
+  btnPrevPage.addEventListener("click", () => {
+    showPage(currentPage - 1);
+  });
+}
+
+if (btnNextPage) {
+  btnNextPage.addEventListener("click", () => {
+    showPage(currentPage + 1);
+  });
 }
 
 function getValidUserByCode(code) {
@@ -119,7 +258,7 @@ function getValidUserByCode(code) {
 
 function getSelectedCountForCurrentCode() {
   if (!currentCode) return 0;
-  return document.querySelectorAll(`.numero[data-codigo="${currentCode}"]`).length;
+  return Array.from(selectedNumbers.values()).filter((code) => code === currentCode).length;
 }
 
 function setSelectionInfo() {
@@ -151,6 +290,7 @@ function validateCode(code) {
   codigoStatus.classList.remove("error");
   codigoStatus.classList.add("exito");
   setSelectionInfo();
+  btnRuleta.disabled = false;
   unlockNumbers();
   return true;
 }
@@ -222,13 +362,8 @@ function renderRegisteredUsers() {
     .join("");
 }
 
-renderRegisteredUsers();
-
 function unlockNumbers() {
-  document.querySelectorAll(".numero.locked").forEach((numero) => {
-    numero.classList.remove("locked");
-    numero.classList.add("unlocked");
-  });
+  renderPage(currentPage);
 }
 
 function resetRouletteState() {
@@ -269,12 +404,21 @@ function hideWinnerModal() {
 }
 
 function startRoulette() {
-  const numeros = Array.from(document.querySelectorAll(".numero"));
-  if (numeros.length === 0 || rouletteInterval) return;
+  const totalNumbers = getTotalNumbers();
+  if (totalNumbers === 0 || rouletteInterval) return;
 
   btnRuleta.disabled = true;
   resultadoRuleta.textContent = "Girando la ruleta...";
   resetRouletteState();
+
+  const winnerIndex = Math.floor(Math.random() * totalNumbers) + 1;
+  const winnerPage = Math.ceil(winnerIndex / PAGE_SIZE);
+  showPage(winnerPage);
+
+  const numeros = Array.from(document.querySelectorAll(".numero"));
+  if (numeros.length === 0) {
+    return;
+  }
 
   let currentIndex = 0;
   rouletteInterval = setInterval(() => {
@@ -289,16 +433,22 @@ function startRoulette() {
     rouletteInterval = null;
     numeros.forEach((numero) => numero.classList.remove("ganando"));
 
-    const winner = numeros[Math.floor(Math.random() * numeros.length)];
-    winner.classList.add("winner");
-    resultadoRuleta.textContent = `Número ganador: ${winner.textContent}`;
+    const winnerNumber = String(winnerIndex);
+    const winner = document.querySelector(`.numero[data-number="${winnerNumber}"]`);
+    if (winner) {
+      winner.classList.add("winner");
+      resultadoRuleta.textContent = `Número ganador: ${winner.textContent}`;
+    }
     unlockNumbers();
 
-    const winnerCode = winner.dataset.codigo || "";
+    const winnerCode = winner?.dataset.codigo || "";
     const winnerUser = winnerCode ? getValidUserByCode(winnerCode) : null;
-    showWinnerModal(winner.textContent, winnerUser);
+    showWinnerModal(winnerNumber, winnerUser);
   }, 2400);
 }
+
+createNumberGrid();
+renderRegisteredUsers();
 
 if (btnValidar) {
   btnValidar.addEventListener("click", () => {
@@ -306,6 +456,18 @@ if (btnValidar) {
     if (validateCode(code)) {
       codigoInput.value = "";
     }
+  });
+}
+
+if (btnRuleta) {
+  btnRuleta.addEventListener("click", () => {
+    if (!currentUser) {
+      codigoStatus.textContent = "Ingresa un código válido antes de girar la ruleta.";
+      codigoStatus.classList.remove("exito");
+      codigoStatus.classList.add("error");
+      return;
+    }
+    startRoulette();
   });
 }
 

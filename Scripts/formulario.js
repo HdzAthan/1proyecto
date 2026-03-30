@@ -1,15 +1,35 @@
 const STORAGE_KEY = "rifaUsuarios";
+const TOTAL_NUMBERS_KEY = "rifaTotalNumbers";
 const ENCRYPTION_KEY = "RifaLocalKey2026";
 
 const formulario = document.getElementById("formularioRegistro");
 const checkboxes = document.querySelectorAll('.checkbox-group input[type="checkbox"]');
 
+function getTotalNumbers() {
+  const storedValue = Number(localStorage.getItem(TOTAL_NUMBERS_KEY));
+  return Number.isInteger(storedValue) && storedValue > 0 ? storedValue : 100;
+}
+
 function base64Encode(value) {
-  return btoa(String.fromCharCode(...new TextEncoder().encode(value)));
+  try {
+    if (typeof TextEncoder !== "undefined") {
+      return btoa(String.fromCharCode(...new TextEncoder().encode(value)));
+    }
+  } catch (error) {
+    // Fallback for older browsers
+  }
+  return btoa(unescape(encodeURIComponent(value)));
 }
 
 function base64Decode(value) {
-  return new TextDecoder().decode(Uint8Array.from(atob(value), (c) => c.charCodeAt(0)));
+  try {
+    if (typeof TextDecoder !== "undefined") {
+      return new TextDecoder().decode(Uint8Array.from(atob(value), (c) => c.charCodeAt(0)));
+    }
+  } catch (error) {
+    // Fallback for older browsers
+  }
+  return decodeURIComponent(escape(atob(value)));
 }
 
 function xorCipher(text) {
@@ -35,7 +55,13 @@ function decrypt(value) {
 }
 
 function getStoredUsers() {
-  return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  try {
+    const usuarios = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    return Array.isArray(usuarios) ? usuarios : [];
+  } catch (error) {
+    localStorage.removeItem(STORAGE_KEY);
+    return [];
+  }
 }
 
 function getTotalAllocatedTickets() {
@@ -46,7 +72,7 @@ function getTotalAllocatedTickets() {
 }
 
 function getAvailableTickets() {
-  return Math.max(0, 100 - getTotalAllocatedTickets());
+  return Math.max(0, getTotalNumbers() - getTotalAllocatedTickets());
 }
 
 function saveUser(user) {
