@@ -34,6 +34,9 @@ let totalPages = 1;
 let winnerNumber = null;
 let winnerCode = "";
 const selectedNumbers = loadSelectedNumbers();
+if (btnRuleta) {
+  btnRuleta.disabled = true;
+}
 loadWinnerState();
 
 function getTotalNumbers() {
@@ -132,6 +135,11 @@ function loadWinnerState() {
     winnerNumber = storedValue;
   }
   winnerCode = storedCode;
+
+  const totalNumbers = getTotalNumbers();
+  if (selectedNumbers.size !== totalNumbers) {
+    clearWinnerState();
+  }
 }
 
 function saveWinnerState(number, code) {
@@ -268,7 +276,7 @@ function renderPage(page) {
         }
       }
 
-      if (totalVendidos === totalNumbers) {
+      if (totalVendidos === totalNumbers && winnerNumber === null) {
         codigoStatus.textContent = "Todos los números fueron elegidos. Iniciando la ruleta automáticamente...";
         codigoStatus.classList.remove("error");
         codigoStatus.classList.add("exito");
@@ -352,7 +360,6 @@ function validateCode(code) {
   codigoStatus.classList.remove("error");
   codigoStatus.classList.add("exito");
   setSelectionInfo();
-  btnRuleta.disabled = false;
   unlockNumbers();
   return true;
 }
@@ -464,9 +471,6 @@ function showWinnerModal(winnerNumber, user) {
   }
 
   winnerModal.classList.remove("hidden");
-  setTimeout(() => {
-    location.reload();
-  }, 5000);
 }
 
 function hideWinnerModal() {
@@ -475,7 +479,7 @@ function hideWinnerModal() {
 
 function startRoulette() {
   const totalNumbers = getTotalNumbers();
-  if (totalNumbers === 0 || rouletteInterval) return;
+  if (totalNumbers === 0 || rouletteInterval || selectedNumbers.size !== totalNumbers || winnerNumber !== null) return;
 
   btnRuleta.disabled = true;
   resultadoRuleta.textContent = "Girando la ruleta...";
@@ -516,6 +520,7 @@ function startRoulette() {
     const winnerUser = winnerCodeFromNumber ? getValidUserByCode(winnerCodeFromNumber) : null;
     showWinnerModal(winnerNumberString, winnerUser);
     renderRegisteredUsers();
+    renderPage(currentPage);
   }, 2400);
 }
 
