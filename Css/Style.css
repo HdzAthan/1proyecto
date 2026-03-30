@@ -12,28 +12,6 @@ header {
   position: relative;
 }
 
-.header-top-buttons {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-}
-
-.btn-registro {
-  background: #ff9800;
-  color: white;
-  padding: 10px 20px;
-  text-decoration: none;
-  border-radius: 6px;
-  font-weight: 600;
-  transition: 0.3s;
-  display: inline-block;
-}
-
-.btn-registro:hover {
-  background: #f57c00;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
-}
 
 .container {
   width: 90%;
@@ -330,16 +308,6 @@ header {
   header h1 {
     font-size: 22px;
     margin: 0 0 10px 0;
-  }
-
-  .header-top-buttons {
-    position: static;
-    margin-bottom: 15px;
-  }
-
-  .btn-registro {
-    width: 100%;
-    text-align: center;
   }
 
   .numero {

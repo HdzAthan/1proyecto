@@ -26,6 +26,14 @@ function encrypt(value) {
   return base64Encode(xorCipher(value));
 }
 
+function decrypt(value) {
+  try {
+    return xorCipher(base64Decode(value));
+  } catch (error) {
+    return String(value || "");
+  }
+}
+
 function getStoredUsers() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
 }
@@ -122,4 +130,5 @@ formulario.addEventListener("submit", (e) => {
   saveUser(nuevoUsuario);
   alert(`¡Formulario enviado correctamente! Tu código para desbloquear los números es: ${codigo}`);
   formulario.reset();
+  window.location.href = "index.html";
 });
