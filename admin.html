@@ -55,6 +55,7 @@
     <script>
       const STORAGE_KEY = "rifaUsuarios";
       const TOTAL_NUMBERS_KEY = "rifaTotalNumbers";
+      const SELECTED_NUMBERS_KEY = "rifaSelectedNumbers";
       const btnClearUsers = document.getElementById("btnClearUsers");
       const adminMessage = document.getElementById("adminMessage");
       const btnSaveTotalNumbers = document.getElementById("btnSaveTotalNumbers");
@@ -105,9 +106,11 @@
         }
 
         localStorage.removeItem(STORAGE_KEY);
-        adminMessage.textContent = `Se han eliminado ${currentCount} usuario(s) registrados.`;
+        localStorage.removeItem(SELECTED_NUMBERS_KEY);
+        adminMessage.textContent = `Se han eliminado ${currentCount} usuario(s) registrados y se ha reiniciado la tabla de números.`;
         adminMessage.classList.remove("error");
         adminMessage.classList.add("exito");
+        updateAdminMessage();
       });
 
       btnSaveTotalNumbers.addEventListener("click", () => {

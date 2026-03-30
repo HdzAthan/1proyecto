@@ -29,6 +29,8 @@ let selectionLimit = 0;
 let selectedCount = 0;
 let currentPage = 1;
 let totalPages = 1;
+let winnerNumber = null;
+let winnerCode = "";
 const selectedNumbers = loadSelectedNumbers();
 
 function getTotalNumbers() {
@@ -186,6 +188,10 @@ function renderPage(page) {
     } else {
       numero.classList.add("locked");
       numero.classList.remove("unlocked");
+    }
+
+    if (winnerNumber === i) {
+      numero.classList.add("winner");
     }
 
     numero.addEventListener("click", function () {
@@ -356,6 +362,8 @@ function renderRegisteredUsers() {
     return;
   }
 
+  const currentWinnerCode = winnerCode || (winnerNumber !== null ? String(selectedNumbers.get(Number(winnerNumber)) || "") : "");
+
   usuariosContainer.innerHTML = usuarios
     .map((usuario) => {
       const nombre = maskName(decrypt(usuario.nombre));
@@ -365,6 +373,9 @@ function renderRegisteredUsers() {
       const cedula = maskCedula(decrypt(usuario.cedula));
       const paquete = decrypt(usuario.paquete);
       const codigo = decrypt(usuario.codigo);
+      const completedCount = Array.from(selectedNumbers.values()).filter((entry) => entry === codigo).length;
+      const isComplete = Number(paquete) > 0 && completedCount >= Number(paquete);
+      const isWinner = codigo.toUpperCase().trim() === currentWinnerCode.toUpperCase().trim();
 
       return `
         <div class="usuario-card">
@@ -372,7 +383,7 @@ function renderRegisteredUsers() {
             <p><strong>${nombre} ${apellido}</strong></p>
             <p>${email} · ${telefono}</p>
             <p class="usuario-meta">${cedula} · ${usuario.registrado}</p>
-            <p class="usuario-meta">Código: ${codigo}</p>
+            <p class="usuario-meta">Código: ${codigo}${isComplete ? ' <span class="user-status">✔</span>' : ''}${isWinner ? ' <span class="user-winner">GANADOR</span>' : ''}</p>
           </div>
           <span>${paquete} números</span>
         </div>
@@ -452,17 +463,19 @@ function startRoulette() {
     rouletteInterval = null;
     numeros.forEach((numero) => numero.classList.remove("ganando"));
 
-    const winnerNumber = String(winnerIndex);
-    const winner = document.querySelector(`.numero[data-number="${winnerNumber}"]`);
+    winnerNumber = winnerIndex;
+    const winnerNumberString = String(winnerIndex);
+    const winner = document.querySelector(`.numero[data-number="${winnerNumberString}"]`);
     if (winner) {
       winner.classList.add("winner");
       resultadoRuleta.textContent = `Número ganador: ${winner.textContent}`;
     }
-    unlockNumbers();
 
-    const winnerCode = winner?.dataset.codigo || "";
-    const winnerUser = winnerCode ? getValidUserByCode(winnerCode) : null;
-    showWinnerModal(winnerNumber, winnerUser);
+    const winnerCodeFromNumber = winner?.dataset.codigo || "";
+    winnerCode = winnerCodeFromNumber;
+    const winnerUser = winnerCodeFromNumber ? getValidUserByCode(winnerCodeFromNumber) : null;
+    showWinnerModal(winnerNumberString, winnerUser);
+    renderRegisteredUsers();
   }, 2400);
 }
 
