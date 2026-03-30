@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin · Me Rifan</title>
+    <link rel="stylesheet" href="Css/Style.css" />
+  </head>
+
+  <body>
+    <header>
+      <div class="header-top-left">
+        <a href="index.html" class="btn-admin">Volver</a>
+      </div>
+      <h1>Panel de Administración</h1>
+      <p>Revisa el estado de la rifa y accede al panel administrativo.</p>
+    </header>
+
+    <div class="container">
+      <section class="admin-panel">
+        <h2>Bienvenido</h2>
+        <p>Desde aquí puedes consultar usuarios registrados y estados del sorteo.</p>
+
+        <div class="admin-cards">
+          <div class="admin-card">
+            <h3>Usuarios registrados</h3>
+            <p>Ver usuarios, códigos y paquetes comprados.</p>
+          </div>
+          <div class="admin-card">
+            <h3>Estado de números</h3>
+            <p>Ver avance de la selección y tickets vendidos.</p>
+          </div>
+        </div>
+
+        <button id="btnClearUsers" class="btn-admin admin-clear-btn" type="button">Limpiar usuarios registrados</button>
+        <p id="adminMessage" class="codigo-status"></p>
+      </section>
+    </div>
+
+    <script>
+      const STORAGE_KEY = "rifaUsuarios";
+      const btnClearUsers = document.getElementById("btnClearUsers");
+      const adminMessage = document.getElementById("adminMessage");
+
+      function getUserCount() {
+        try {
+          const users = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+          return Array.isArray(users) ? users.length : 0;
+        } catch (error) {
+          return 0;
+        }
+      }
+
+      function updateAdminMessage() {
+        const count = getUserCount();
+        if (count === 0) {
+          adminMessage.textContent = "No hay usuarios registrados actualmente.";
+          adminMessage.classList.remove("error");
+          adminMessage.classList.add("exito");
+        } else {
+          adminMessage.textContent = `Usuarios registrados: ${count}. Presiona el botón para eliminarlos.`;
+          adminMessage.classList.remove("exito");
+          adminMessage.classList.remove("error");
+        }
+      }
+
+      btnClearUsers.addEventListener("click", () => {
+        const currentCount = getUserCount();
+        if (currentCount === 0) {
+          adminMessage.textContent = "No hay usuarios para eliminar.";
+          adminMessage.classList.remove("exito");
+          adminMessage.classList.add("error");
+          return;
+        }
+
+        if (!confirm(`¿Estás seguro de eliminar los ${currentCount} usuarios registrados? Esta acción no se puede deshacer.`)) {
+          return;
+        }
+
+        localStorage.removeItem(STORAGE_KEY);
+        adminMessage.textContent = `Se han eliminado ${currentCount} usuario(s) registrados.`;
+        adminMessage.classList.remove("error");
+        adminMessage.classList.add("exito");
+      });
+
+      updateAdminMessage();
+    </script>
+  </body>
+</html>

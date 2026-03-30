@@ -12,6 +12,32 @@ header {
   position: relative;
 }
 
+.header-top-left {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
+.btn-admin {
+  background: #3498db;
+  color: white;
+  padding: 12px 24px;
+  text-decoration: none;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s;
+  display: inline-block;
+}
+
+.btn-admin:hover {
+  background: #2980b9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
 
 .container {
   width: 90%;
