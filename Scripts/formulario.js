@@ -95,6 +95,15 @@ function generateCode(length = 6) {
   return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
 }
 
+const ticketsRemaining = document.getElementById("ticketsRemaining");
+
+function renderAvailableTickets() {
+  if (!ticketsRemaining) return;
+  const disponible = getAvailableTickets();
+  ticketsRemaining.textContent = `Quedan ${disponible} ticket(s) disponibles.`;
+  ticketsRemaining.style.color = disponible > 0 ? "#2c3e50" : "#c0392b";
+}
+
 // Permitir solo un checkbox seleccionado
 checkboxes.forEach((cb) => {
   cb.addEventListener("change", () => {
@@ -103,8 +112,11 @@ checkboxes.forEach((cb) => {
         if (other !== cb) other.checked = false;
       });
     }
+    renderAvailableTickets();
   });
 });
+
+renderAvailableTickets();
 
 // Validación y envío del formulario
 formulario.addEventListener("submit", (e) => {
